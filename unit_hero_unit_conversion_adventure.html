@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌟 UNIT HERO: Unit Conversion Adventure 🦸‍♀️</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Google Fonts: Fredoka & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .font-poppins {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Custom 3D Buttons & Candy UI Styles */
+    .btn-candy {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+    }
+    .btn-candy:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+    .btn-candy:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    /* Glows & Shadows */
+    .glow-yellow {
+      box-shadow: 0 0 25px rgba(251, 191, 36, 0.6);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 25px rgba(34, 211, 238, 0.6);
+    }
+    .text-shadow-hero {
+      text-shadow: 3px 3px 0px #0f172a, -1px -1px 0 #0f172a, 1px -1px 0 #0f172a, -1px 1px 0 #0f172a;
+    }
+    .text-stroke-sm {
+      -webkit-text-stroke: 1px #0f172a;
+    }
+
+    /* Floating Keyframe Animation */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: floatSlow 4s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    .animate-pulse-glow {
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    /* Map Path Animation */
+    .map-path-dash {
+      stroke-dasharray: 12;
+      animation: dashMove 20s linear infinite;
+    }
+    @keyframes dashMove {
+      to { stroke-dashoffset: -240; }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e1b4b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #818cf8;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a5b4fc;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen relative overflow-x-hidden">
+
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+  <header id="top-header" class="bg-indigo-950/80 backdrop-blur-md border-b-4 border-amber-400 sticky top-0 z-40 px-4 py-2 flex items-center justify-between shadow-lg">
+    <div class="flex items-center space-x-3 cursor-pointer" onclick="app.showScreen('home')">
+      <span class="text-3xl animate-bounce">🦸‍♀️</span>
+      <div>
+        <h1 class="text-lg md:text-xl font-bold text-amber-300 leading-tight tracking-wide drop-shadow">UNIT HERO</h1>
+        <p class="text-xs text-indigo-200 hidden sm:block">Year 5 Conversion Adventure</p>
+      </div>
+    </div>
+
+    <!-- Student Stats Badge -->
+    <div id="header-user-badge" class="hidden flex items-center bg-indigo-900/90 border-2 border-indigo-400 rounded-full px-3 py-1 space-x-3">
+      <span id="hdr-avatar" class="text-2xl bg-indigo-800 rounded-full p-1 border border-amber-300">🦸‍♀️</span>
+      <div class="flex flex-col">
+        <span id="hdr-name" class="text-xs sm:text-sm font-bold text-white max-w-[100px] sm:max-w-[140px] truncate">Explorer</span>
+        <div class="flex items-center space-x-2 text-xs">
+          <span class="text-amber-300 font-bold"><i class="fa-solid font-black fa-star text-amber-400 mr-1"></i><span id="hdr-stars">0</span></span>
+          <span class="text-cyan-300 font-bold"><i class="fa-solid fa-trophy text-cyan-400 mr-1"></i><span id="hdr-score">0</span> pts</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Controls -->
+    <div class="flex items-center space-x-2">
+      <button onclick="app.toggleSound()" id="sound-btn" class="btn-candy bg-indigo-700 hover:bg-indigo-600 text-amber-300 border-2 border-indigo-400 px-3 py-1.5 rounded-2xl text-sm font-bold flex items-center space-x-1" title="Toggle Sound">
+        <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+        <span id="sound-text" class="hidden md:inline">ON</span>
+      </button>
+      
+      <button onclick="app.showScreen('notes')" class="btn-candy bg-amber-500 hover:bg-amber-400 text-indigo-950 border-2 border-amber-300 px-3 py-1.5 rounded-2xl text-sm font-bold flex items-center space-x-1">
+        <i class="fa-solid fa-book-open"></i>
+        <span class="hidden md:inline">Notes</span>
+      </button>
+
+      <button onclick="app.showScreen('map')" id="map-nav-btn" class="hidden btn-candy bg-emerald-500 hover:bg-emerald-400 text-slate-950 border-2 border-emerald-300 px-3 py-1.5 rounded-2xl text-sm font-bold flex items-center space-x-1">
+        <i class="fa-solid fa-map-location-dot"></i>
+        <span class="hidden md:inline">Map</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-grow flex items-center justify-center p-3 sm:p-6 max-w-6xl mx-auto w-full">
+
+    <!-- ==================== HOME SCREEN ==================== -->
+    <section id="screen-home" class="w-full max-w-2xl bg-indigo-900/90 border-4 border-amber-400 rounded-3xl p-6 sm:p-8 shadow-2xl text-center space-y-6 relative overflow-hidden my-auto backdrop-blur-md">
+      <div class="absolute -top-12 -right-12 w-40 h-40 bg-pink-500/20 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Title Banner -->
+      <div class="space-y-2 animate-float">
+        <div class="inline-block bg-amber-400 text-indigo-950 font-black px-4 py-1 rounded-full text-xs sm:text-sm tracking-widest uppercase shadow">
+          Year 5 Mathematics Adventure
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-black text-amber-300 text-shadow-hero leading-tight">
+          🌟 UNIT HERO 🦸‍♀️
+        </h2>
+        <p class="text-indigo-200 text-base sm:text-lg font-medium">
+          Master Length, Mass & Capacity Unit Conversions!
+        </p>
+      </div>
+
+      <!-- Hero Setup Form -->
+      <div class="bg-indigo-950/80 border-2 border-indigo-500/60 rounded-2xl p-5 text-left space-y-4 shadow-inner">
+        <div>
+          <label class="block text-amber-300 text-sm font-bold mb-1.5">
+            <i class="fa-solid fa-user-astronaut mr-1"></i> Enter Your Hero Name:
+          </label>
+          <input type="text" id="player-name-input" placeholder="e.g. Alex The Hero..." maxlength="18" 
+                 class="w-full bg-indigo-900 border-2 border-indigo-400 rounded-xl px-4 py-2.5 text-white font-bold placeholder-indigo-400 focus:outline-none focus:border-amber-400 text-lg shadow-sm">
+        </div>
+
+        <div>
+          <label class="block text-amber-300 text-sm font-bold mb-2">
+            <i class="fa-solid fa-mask mr-1"></i> Choose Your Hero Avatar:
+          </label>
+          <div class="grid grid-cols-4 gap-2 sm:gap-3" id="avatar-selector">
+            <button type="button" onclick="app.selectAvatar('🦸‍♀️')" class="avatar-opt btn-candy bg-indigo-800 border-2 border-amber-400 rounded-2xl p-3 text-3xl sm:text-4xl hover:bg-indigo-700 transition flex items-center justify-center">🦸‍♀️</button>
+            <button type="button" onclick="app.selectAvatar('🦸‍♂️')" class="avatar-opt btn-candy bg-indigo-900 border-2 border-indigo-700 rounded-2xl p-3 text-3xl sm:text-4xl hover:bg-indigo-700 transition flex items-center justify-center">🦸‍♂️</button>
+            <button type="button" onclick="app.selectAvatar('🧙')" class="avatar-opt btn-candy bg-indigo-900 border-2 border-indigo-700 rounded-2xl p-3 text-3xl sm:text-4xl hover:bg-indigo-700 transition flex items-center justify-center">🧙</button>
+            <button type="button" onclick="app.selectAvatar('🤖')" class="avatar-opt btn-candy bg-indigo-900 border-2 border-indigo-700 rounded-2xl p-3 text-3xl sm:text-4xl hover:bg-indigo-700 transition flex items-center justify-center">🤖</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Action Buttons -->
+      <div class="space-y-3 pt-2">
+        <button onclick="app.startAdventure()" class="w-full btn-candy bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-xl py-4 rounded-2xl border-4 border-emerald-300 tracking-wide uppercase shadow-lg flex items-center justify-center space-x-2">
+          <span>🚀 START ADVENTURE</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="app.showScreen('notes')" class="btn-candy bg-indigo-800 hover:bg-indigo-700 text-amber-300 font-bold py-3 rounded-2xl border-2 border-indigo-500 text-base flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-book-bookmark text-xl"></i>
+            <span>📚 NOTES</span>
+          </button>
+          <button onclick="app.showScreen('leaderboard')" class="btn-candy bg-indigo-800 hover:bg-indigo-700 text-amber-300 font-bold py-3 rounded-2xl border-2 border-indigo-500 text-base flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-trophy text-xl text-amber-400"></i>
+            <span>🏆 LEADERBOARD</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== ADVENTURE MAP SCREEN ==================== -->
+    <section id="screen-map" class="hidden w-full max-w-4xl bg-indigo-950/80 border-4 border-amber-400 rounded-3xl p-4 sm:p-6 shadow-2xl relative overflow-hidden backdrop-blur-md">
+      <!-- Map Header -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 bg-indigo-900/90 border-2 border-indigo-500 p-4 rounded-2xl">
+        <div class="text-center sm:text-left">
+          <h2 class="text-2xl sm:text-3xl font-black text-amber-300 tracking-wide">🗺️ ADVENTURE MAP</h2>
+          <p class="text-xs sm:text-sm text-indigo-200">Tap an unlocked level to begin your conversion quest!</p>
+        </div>
+        <div class="flex items-center space-x-3 bg-indigo-950 px-4 py-2 rounded-xl border border-amber-400/50">
+          <div class="text-center">
+            <span class="text-xs text-indigo-300 uppercase font-bold block">Total Stars</span>
+            <span class="text-lg font-black text-amber-300"><i class="fa-solid fa-star text-amber-400 mr-1"></i><span id="map-total-stars">0</span> / 18</span>
+          </div>
+          <div class="h-8 w-px bg-indigo-700"></div>
+          <div class="text-center">
+            <span class="text-xs text-indigo-300 uppercase font-bold block">Total Score</span>
+            <span class="text-lg font-black text-cyan-300"><span id="map-total-score">0</span> pts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Candy Crush Winding Path Container -->
+      <div class="relative min-h-[520px] sm:min-h-[580px] bg-gradient-to-b from-teal-900/40 via-indigo-950/60 to-purple-950/40 rounded-2xl p-4 sm:p-8 border-2 border-indigo-700/50 overflow-hidden flex flex-col justify-between">
+        <!-- SVG Path Lines -->
+        <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+          <path id="map-svg-path" d="M 80 480 C 250 480, 250 390, 400 390 C 650 390, 650 300, 450 300 C 200 300, 200 190, 400 190 C 600 190, 650 90, 500 80" 
+                fill="none" stroke="#f59e0b" stroke-width="8" stroke-linecap="round" class="map-path-dash opacity-70" />
+        </svg>
+
+        <!-- Dynamic Level Nodes Container -->
+        <div id="map-nodes-grid" class="relative z-10 w-full h-full min-h-[480px]">
+          <!-- Level nodes will be injected dynamically by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== QUIZ SCREEN ==================== -->
+    <section id="screen-quiz" class="hidden w-full max-w-3xl bg-indigo-900/95 border-4 border-amber-400 rounded-3xl p-5 sm:p-8 shadow-2xl relative my-auto backdrop-blur-md">
+      <!-- Quiz Progress Bar Header -->
+      <div class="flex items-center justify-between bg-indigo-950 border-2 border-indigo-600 rounded-2xl p-3 sm:p-4 mb-5">
+        <div class="flex items-center space-x-3">
+          <span id="quiz-level-icon" class="text-3xl sm:text-4xl">🌱</span>
+          <div>
+            <h3 id="quiz-level-title" class="text-base sm:text-xl font-bold text-amber-300">Level 1 - Unit Village</h3>
+            <span id="quiz-difficulty-tag" class="text-xs bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded-full uppercase">Easy</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-xs text-indigo-300 font-bold uppercase">Question</div>
+          <div class="text-lg sm:text-2xl font-black text-amber-300"><span id="quiz-q-num">1</span> / <span id="quiz-q-total">5</span></div>
+        </div>
+      </div>
+
+      <!-- Question Card Container -->
+      <div class="bg-indigo-950/80 border-2 border-amber-400/80 rounded-2xl p-5 sm:p-7 shadow-inner mb-6 space-y-4">
+        <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-indigo-300 border-b border-indigo-800 pb-2">
+          <span><i class="fa-solid fa-bullseye text-amber-400 mr-1"></i> Target: Conversion</span>
+          <span class="text-cyan-300 font-bold"><i class="fa-solid fa-coins text-amber-400 mr-1"></i> <span id="quiz-pts-value">10</span> Points</span>
+        </div>
+
+        <!-- Question Prompt Text -->
+        <div id="quiz-question-text" class="text-lg sm:text-2xl font-bold text-white leading-relaxed text-center py-2">
+          Convert 3 km to meters (m).
+        </div>
+      </div>
+
+      <!-- Multiple Choice Options (A - D) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4" id="quiz-options-container">
+        <!-- Buttons rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ==================== NOTES & STUDY HALL ==================== -->
+    <section id="screen-notes" class="hidden w-full max-w-4xl bg-indigo-900/95 border-4 border-amber-400 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 backdrop-blur-md">
+      <!-- Title Header -->
+      <div class="flex items-center justify-between border-b-2 border-indigo-700 pb-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-black text-amber-300 flex items-center gap-2">
+            📚 HERO STUDY HALL & CHEAT SHEET
+          </h2>
+          <p class="text-xs sm:text-sm text-indigo-200">Master rules, common fraction values, and test calculations live!</p>
+        </div>
+        <button onclick="app.closeNotes()" class="btn-candy bg-indigo-800 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-sm border border-indigo-500">
+          ✕ Back
+        </button>
+      </div>
+
+      <!-- Quick Formula Rules Banner -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-indigo-950 border-2 border-emerald-400 rounded-2xl p-4 space-y-2">
+          <h4 class="font-bold text-emerald-300 text-base flex items-center gap-2">
+            ⬇️ LARGER UNIT → SMALLER UNIT
+          </h4>
+          <p class="text-xs sm:text-sm text-indigo-100">
+            Multiply by conversion factor:
+          </p>
+          <ul class="text-xs sm:text-sm text-indigo-200 space-y-1 font-mono">
+            <li>• 1 km = 1,000 m (× 1,000)</li>
+            <li>• 1 m = 100 cm (× 100)</li>
+            <li>• 1 cm = 10 mm (× 10)</li>
+            <li>• 1 kg = 1,000 g (× 1,000)</li>
+            <li>• 1 L = 1,000 mL (× 1,000)</li>
+          </ul>
+        </div>
+
+        <div class="bg-indigo-950 border-2 border-cyan-400 rounded-2xl p-4 space-y-2">
+          <h4 class="font-bold text-cyan-300 text-base flex items-center gap-2">
+            ⬆️ SMALLER UNIT → LARGER UNIT
+          </h4>
+          <p class="text-xs sm:text-sm text-indigo-100">
+            Divide by conversion factor:
+          </p>
+          <ul class="text-xs sm:text-sm text-indigo-200 space-y-1 font-mono">
+            <li>• 1,000 m = 1 km (÷ 1,000)</li>
+            <li>• 100 cm = 1 m (÷ 100)</li>
+            <li>• 10 mm = 1 cm (÷ 10)</li>
+            <li>• 1,000 g = 1 kg (÷ 1,000)</li>
+            <li>• 1,000 mL = 1 L (÷ 1,000)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Fraction Equivalents Cheat Sheet Table -->
+      <div class="bg-indigo-950 border-2 border-amber-400/60 rounded-2xl p-4 space-y-3">
+        <h4 class="font-bold text-amber-300 text-base flex items-center gap-2">
+          ⭐ KEY YEAR 5 FRACTION CONVERSIONS (out of 1000)
+        </h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs sm:text-sm font-bold">
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">½ = 500</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">¼ = 250</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">¾ = 750</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">⅛ = 125</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">⅖ = 400</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">⅗ = 600</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">1½ = 1,500</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">1⅛ = 1,125</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">2¼ = 2,250</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">1⅗ = 1,600</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">2½ = 2,500</div>
+          <div class="bg-indigo-900/80 p-2 rounded-xl border border-indigo-700">¾ m = 75 cm</div>
+        </div>
+      </div>
+
+      <!-- Live Interactive Converter Practice Tool -->
+      <div class="bg-indigo-950 border-2 border-pink-400 rounded-2xl p-5 space-y-4 shadow-inner">
+        <h4 class="font-bold text-pink-300 text-base flex items-center gap-2">
+          ⚡ LIVE PRACTICE CONVERTER
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-indigo-300 mb-1">Pick Fraction / Number:</label>
+            <select id="calc-fraction" class="w-full bg-indigo-900 border border-indigo-500 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-amber-400">
+              <option value="0.5">½ (Half)</option>
+              <option value="0.25">¼ (Quarter)</option>
+              <option value="0.75">¾ (Three Quarters)</option>
+              <option value="0.4">⅖ (Two Fifties)</option>
+              <option value="0.6">⅗ (Three Fifties)</option>
+              <option value="0.125">⅛ (One Eighth)</option>
+              <option value="1.5">1½ (One and Half)</option>
+              <option value="1.125">1⅛ (One and Eighth)</option>
+              <option value="2.25">2¼ (Two and Quarter)</option>
+              <option value="1.6">1⅗ (One and Three Fifties)</option>
+              <option value="2.5">2½ (Two and Half)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-indigo-300 mb-1">Conversion Type:</label>
+            <select id="calc-type" class="w-full bg-indigo-900 border border-indigo-500 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-amber-400">
+              <option value="km_m">km ➔ m (× 1,000)</option>
+              <option value="m_cm">m ➔ cm (× 100)</option>
+              <option value="kg_g">kg ➔ g (× 1,000)</option>
+              <option value="l_ml">L ➔ mL (× 1,000)</option>
+            </select>
+          </div>
+
+          <div class="flex items-end">
+            <button onclick="app.runLiveConverter()" class="w-full btn-candy bg-pink-500 hover:bg-pink-400 text-slate-950 font-black py-2 rounded-xl text-sm border-2 border-pink-300">
+              Calculate Step-By-Step
+            </button>
+          </div>
+        </div>
+
+        <div id="calc-result-box" class="hidden bg-indigo-900/90 border border-amber-400 rounded-xl p-3 text-xs sm:text-sm text-indigo-100 font-mono space-y-1">
+          <!-- Step by step output injected here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== LEADERBOARD SCREEN ==================== -->
+    <section id="screen-leaderboard" class="hidden w-full max-w-3xl bg-indigo-900/95 border-4 border-amber-400 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 backdrop-blur-md">
+      <div class="flex items-center justify-between border-b-2 border-indigo-700 pb-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-black text-amber-300 flex items-center gap-2">
+            🏆 HALL OF HEROES LEADERBOARD
+          </h2>
+          <p class="text-xs sm:text-sm text-indigo-200">Top Unit Masters in Year 5!</p>
+        </div>
+        <button onclick="app.closeLeaderboard()" class="btn-candy bg-indigo-800 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-sm border border-indigo-500">
+          ✕ Close
+        </button>
+      </div>
+
+      <!-- Leaderboard Table Container -->
+      <div class="bg-indigo-950 border-2 border-indigo-700 rounded-2xl overflow-hidden shadow-inner">
+        <div class="grid grid-cols-12 bg-indigo-800/80 p-3 text-xs sm:text-sm font-black text-amber-300 border-b border-indigo-700 text-center">
+          <div class="col-span-2">Rank</div>
+          <div class="col-span-5 text-left">Hero Name</div>
+          <div class="col-span-2">Stars</div>
+          <div class="col-span-3">Score</div>
+        </div>
+        <div id="leaderboard-rows" class="divide-y divide-indigo-900 max-h-80 overflow-y-auto">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== FINAL RESULTS SCREEN ==================== -->
+    <section id="screen-results" class="hidden w-full max-w-2xl bg-indigo-900/95 border-4 border-amber-400 rounded-3xl p-6 sm:p-8 shadow-2xl text-center space-y-6 backdrop-blur-md my-auto">
+      <div class="animate-bounce text-5xl sm:text-6xl">🏆</div>
+      <div>
+        <span class="bg-amber-400 text-indigo-950 font-black px-4 py-1 rounded-full text-xs uppercase tracking-widest">
+          Adventure Completed!
+        </span>
+        <h2 id="res-achievement-title" class="text-2xl sm:text-4xl font-black text-amber-300 mt-2 text-shadow-hero">
+          🌟 SUPREME UNIT HERO 👑
+        </h2>
+        <p class="text-indigo-200 text-sm sm:text-base">Fantastic job, <span id="res-student-name" class="text-white font-bold">Hero</span>!</p>
+      </div>
+
+      <div class="bg-indigo-950 border-2 border-indigo-700 rounded-2xl p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+        <div>
+          <span class="text-xs text-indigo-300 uppercase font-bold block">Total Score</span>
+          <span id="res-score" class="text-xl sm:text-2xl font-black text-amber-300">0</span>
+        </div>
+        <div>
+          <span class="text-xs text-indigo-300 uppercase font-bold block">Total Stars</span>
+          <span id="res-stars" class="text-xl sm:text-2xl font-black text-amber-400">0 / 18</span>
+        </div>
+        <div>
+          <span class="text-xs text-indigo-300 uppercase font-bold block">Accuracy</span>
+          <span id="res-accuracy" class="text-xl sm:text-2xl font-black text-emerald-400">0%</span>
+        </div>
+        <div>
+          <span class="text-xs text-indigo-300 uppercase font-bold block">Correct Ans</span>
+          <span id="res-correct" class="text-xl sm:text-2xl font-black text-cyan-300">0 / 0</span>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <button onclick="app.showScreen('map')" class="w-full btn-candy bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-lg py-3.5 rounded-2xl border-2 border-emerald-300 uppercase">
+          🗺️ Return to Adventure Map
+        </button>
+        <button onclick="app.showScreen('leaderboard')" class="w-full btn-candy bg-indigo-800 hover:bg-indigo-700 text-amber-300 font-bold py-3 rounded-2xl border-2 border-indigo-500 text-base">
+          🏆 View Hall of Fame Leaderboard
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS & POPUPS ==================== -->
+  
+  <div id="modal-hint" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-indigo-900 border-4 border-amber-400 rounded-3xl p-6 max-w-md w-full shadow-2xl text-center space-y-4 animate-float">
+      <div class="text-4xl">💡</div>
+      <h3 class="text-xl font-bold text-amber-300">Friendly Hero Hint!</h3>
+      <p id="modal-hint-text" class="text-sm sm:text-base text-indigo-100 bg-indigo-950 p-4 rounded-xl border border-indigo-700 leading-relaxed font-medium">
+        Break down the conversion! 1 kg = 1000 g. Divide 1000 by 5 first, then multiply!
+      </p>
+      <button onclick="app.closeHintModal()" class="w-full btn-candy bg-amber-400 hover:bg-amber-300 text-slate-950 font-black py-3 rounded-xl border-2 border-amber-200">
+        Got it! Try Again 🚀
+      </button>
+    </div>
+  </div>
+
+  <div id="modal-level-complete" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-indigo-900 border-4 border-amber-400 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center space-y-5">
+      <div id="lvl-stars-display" class="text-4xl sm:text-5xl space-x-2">
+        <i class="fa-solid fa-star text-amber-400 animate-bounce"></i>
+        <i class="fa-solid fa-star text-amber-400 animate-bounce delay-100"></i>
+        <i class="fa-solid fa-star text-amber-400 animate-bounce delay-200"></i>
+      </div>
+
+      <h3 class="text-2xl sm:text-3xl font-black text-amber-300 text-shadow-hero">
+        LEVEL COMPLETE! ⭐
+      </h3>
+
+      <div class="bg-indigo-950 p-4 rounded-xl border border-indigo-700 space-y-2">
+        <div class="flex justify-between text-sm font-bold text-indigo-200">
+          <span>Level Score:</span>
+          <span id="lvl-score-val" class="text-cyan-300">0 pts</span>
+        </div>
+        <div class="flex justify-between text-sm font-bold text-indigo-200">
+          <span>Accuracy:</span>
+          <span id="lvl-accuracy-val" class="text-emerald-400">100%</span>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-2">
+        <button onclick="app.proceedNextLevel()" class="w-full btn-candy bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-lg py-3 rounded-2xl border-2 border-emerald-300 uppercase">
+          ➡️ Next Level 🔓
+        </button>
+        <button onclick="app.showScreen('map')" class="w-full btn-candy bg-indigo-800 hover:bg-indigo-700 text-amber-300 font-bold py-2.5 rounded-2xl border border-indigo-500 text-sm">
+          🗺️ Return to Map
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-3 text-xs text-indigo-300/80 font-medium">
+    🌟 Unit Hero Adventure • Year 5 Mathematics Unit Conversion • Made for Champions
+  </footer>
+
+  <script>
+    class WebAudioSynth {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.bgmTimer = null;
+        this.bgmStep = 0;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, type, duration, vol = 0.1) {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) { console.error(e); }
+      }
+
+      playClick() {
+        this.init();
+        this.playTone(600, 'triangle', 0.08, 0.1);
+      }
+
+      playCorrect() {
+        this.init();
+        const now = this.ctx ? this.ctx.currentTime : 0;
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 'sine', 0.25, 0.15), idx * 80);
+        });
+      }
+
+      playWrong() {
+        this.init();
+        this.playTone(220, 'sawtooth', 0.15, 0.12);
+        setTimeout(() => this.playTone(180, 'sawtooth', 0.25, 0.12), 150);
+      }
+
+      playLevelUnlock() {
+        this.init();
+        const notes = [440, 554.37, 659.25, 880];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 'triangle', 0.3, 0.15), idx * 100);
+        });
+      }
+
+      playLevelComplete() {
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 987.77, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 'sine', 0.4, 0.2), idx * 120);
+        });
+      }
+
+      playVictory() {
+        this.init();
+        const notes = [392, 523.25, 659.25, 783.99, 1046.50, 1318.51];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 'triangle', 0.5, 0.2), idx * 130);
+        });
+      }
+
+      toggleBGM() {
+        this.enabled = !this.enabled;
+        if (!this.enabled && this.bgmTimer) {
+          clearInterval(this.bgmTimer);
+          this.bgmTimer = null;
+        } else if (this.enabled) {
+          this.startBGM();
+        }
+        return this.enabled;
+      }
+
+      startBGM() {
+        if (this.bgmTimer || !this.enabled) return;
+        this.init();
+        const bgmNotes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+        this.bgmTimer = setInterval(() => {
+          if (!this.enabled) return;
+          const note = bgmNotes[this.bgmStep % bgmNotes.length];
+          this.playTone(note, 'sine', 0.15, 0.02);
+          this.bgmStep++;
+        }, 400);
+      }
+    }
+
+    class ConfettiEngine {
+      constructor() {
+        this.canvas = document.getElementById('confetti-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.animating = false;
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+      }
+
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
+
+      explode() {
+        this.resize();
+        this.particles = [];
+        const colors = ['#f59e0b', '#10b981', '#06b6d4', '#ec4899', '#8b5cf6', '#3b82f6'];
+        for (let i = 0; i < 90; i++) {
+          this.particles.push({
+            x: this.canvas.width / 2,
+            y: this.canvas.height / 2,
+            vx: (Math.random() - 0.5) * 16,
+            vy: (Math.random() - 0.7) * 16,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            size: Math.random() * 8 + 4,
+            rotation: Math.random() * 360,
+            vRot: (Math.random() - 0.5) * 10,
+            alpha: 1
+          });
+        }
+        if (!this.animating) {
+          this.animating = true;
+          this.loop();
+        }
+      }
+
+      loop() {
+        if (!this.animating) return;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let alive = false;
+
+        this.particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.3; // gravity
+          p.rotation += p.vRot;
+          p.alpha -= 0.012;
+
+          if (p.alpha > 0) {
+            alive = true;
+            this.ctx.save();
+            this.ctx.globalAlpha = Math.max(0, p.alpha);
+            this.ctx.translate(p.x, p.y);
+            this.ctx.rotate((p.rotation * Math.PI) / 180);
+            this.ctx.fillStyle = p.color;
+            this.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            this.ctx.restore();
+          }
+        });
+
+        if (alive) {
+          requestAnimationFrame(() => this.loop());
+        } else {
+          this.animating = false;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+      }
+    }
+
+    const GAME_LEVELS = [
+      {
+        id: 1,
+        title: "🌱 Level 1 – UNIT VILLAGE",
+        biome: "Whole-Number Conversions",
+        pts: 10,
+        badge: "Easy",
+        questions: [
+          {
+            q: "Convert 3 km into meters (m).",
+            opts: ["30 m", "300 m", "3,000 m", "30,000 m"],
+            ans: 2,
+            hint: "1 km = 1,000 m. Multiply 3 × 1,000!"
+          },
+          {
+            q: "Convert 5 m into centimeters (cm).",
+            opts: ["50 cm", "500 cm", "5,000 cm", "50,000 cm"],
+            ans: 1,
+            hint: "1 m = 100 cm. Multiply 5 × 100!"
+          },
+          {
+            q: "Convert 40 mm into centimeters (cm).",
+            opts: ["4 cm", "40 cm", "400 cm", "0.4 cm"],
+            ans: 0,
+            hint: "10 mm = 1 cm. Divide 40 ÷ 10!"
+          },
+          {
+            q: "Convert 8 kg into grams (g).",
+            opts: ["80 g", "800 g", "8,000 g", "80,000 g"],
+            ans: 2,
+            hint: "1 kg = 1,000 g. Multiply 8 × 1,000!"
+          },
+          {
+            q: "Convert 6 L into milliliters (mL).",
+            opts: ["60 mL", "600 mL", "6,000 mL", "60,000 mL"],
+            ans: 2,
+            hint: "1 L = 1,000 mL. Multiply 6 × 1,000!"
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "🌳 Level 2 – CONVERSION FOREST",
+        biome: "Simple Fractions (½, ¼, ¾)",
+        pts: 20,
+        badge: "Medium",
+        questions: [
+          {
+            q: "Convert ½ km into meters (m).",
+            opts: ["250 m", "500 m", "750 m", "100 m"],
+            ans: 1,
+            hint: "1 km = 1,000 m. Half of 1,000 is 1,000 ÷ 2 = 500 m!"
+          },
+          {
+            q: "Convert ¾ m into centimeters (cm).",
+            opts: ["25 cm", "50 cm", "75 cm", "750 cm"],
+            ans: 2,
+            hint: "1 m = 100 cm. ¼ m = 25 cm, so ¾ m = 25 × 3 = 75 cm!"
+          },
+          {
+            q: "Convert ½ kg into grams (g).",
+            opts: ["200 g", "250 g", "500 g", "750 g"],
+            ans: 2,
+            hint: "1 kg = 1,000 g. Half of 1,000 is 500 g!"
+          },
+          {
+            q: "Convert ¾ kg into grams (g).",
+            opts: ["250 g", "500 g", "750 g", "800 g"],
+            ans: 2,
+            hint: "1 kg = 1,000 g. Divide 1,000 by 4 = 250 g, then multiply by 3!"
+          },
+          {
+            q: "Convert ½ L into milliliters (mL).",
+            opts: ["250 mL", "500 mL", "750 mL", "100 mL"],
+            ans: 1,
+            hint: "1 L = 1,000 mL. Half of 1,000 is 500 mL!"
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "⛰️ Level 3 – MASS MOUNTAIN",
+        biome: "Fraction Conversions (⅖, ⅗, ⅞ kg)",
+        pts: 30,
+        badge: "Challenging",
+        questions: [
+          {
+            q: "Convert ⅖ km into meters (m).",
+            opts: ["200 m", "400 m", "500 m", "600 m"],
+            ans: 1,
+            hint: "1 km = 1,000 m. (1,000 ÷ 5) × 2 = 200 × 2 = 400 m!"
+          },
+          {
+            q: "Convert ⅖ kg into grams (g).",
+            opts: ["200 g", "400 g", "500 g", "600 g"],
+            ans: 1,
+            hint: "1 kg = 1,000 g. (1,000 ÷ 5) × 2 = 200 × 2 = 400 g!"
+          },
+          {
+            q: "Convert ⅗ kg into grams (g).",
+            opts: ["300 g", "500 g", "600 g", "750 g"],
+            ans: 2,
+            hint: "1 kg = 1,000 g. (1,000 ÷ 5) × 3 = 200 × 3 = 600 g!"
+          },
+          {
+            q: "Convert ⅛ kg into grams (g).",
+            opts: ["100 g", "125 g", "250 g", "500 g"],
+            ans: 1,
+            hint: "1 kg = 1,000 g. Divide 1,000 ÷ 8 = 125 g!"
+          },
+          {
+            q: "Convert ⅖ L into milliliters (mL).",
+            opts: ["200 mL", "400 mL", "500 mL", "600 mL"],
+            ans: 1,
+            hint: "1 L = 1,000 mL. (1,000 ÷ 5) × 2 = 400 mL!"
+          }
+        ]
+      },
+      {
+        id: 4,
+        title: "🌊 Level 4 – CAPACITY RIVER",
+        biome: "Fractions & Mixed Numbers (1⅛ L, 2¼ L)",
+        pts: 30,
+        badge: "Mixed Numbers",
+        questions: [
+          {
+            q: "Convert ¾ L into milliliters (mL).",
+            opts: ["250 mL", "500 mL", "750 mL", "800 mL"],
+            ans: 2,
+            hint: "1 L = 1,000 mL. (1,000 ÷ 4) × 3 = 750 mL!"
+          },
+          {
+            q: "Convert 1⅛ L into milliliters (mL).",
+            opts: ["1,125 mL", "1,250 mL", "1,500 mL", "1,800 mL"],
+            ans: 0,
+            hint: "1 L = 1,000 mL and ⅛ L = 125 mL. Total = 1,000 + 125 = 1,125 mL!"
+          },
+          {
+            q: "Convert 1⅗ L into milliliters (mL).",
+            opts: ["1,300 mL", "1,400 mL", "1,600 mL", "1,750 mL"],
+            ans: 2,
+            hint: "1 L = 1,000 mL and ⅗ L = 600 mL. Total = 1,000 + 600 = 1,600 mL!"
+          },
+          {
+            q: "Convert 2¼ m into centimeters (cm).",
+            opts: ["215 cm", "225 cm", "250 cm", "275 cm"],
+            ans: 1,
+            hint: "2 m = 200 cm and ¼ m = 25 cm. Total = 200 + 25 = 225 cm!"
+          },
+          {
+            q: "Convert 1½ kg into grams (g).",
+            opts: ["1,200 g", "1,250 g", "1,500 g", "1,750 g"],
+            ans: 2,
+            hint: "1 kg = 1,000 g and ½ kg = 500 g. Total = 1,000 + 500 = 1,500 g!"
+          }
+        ]
+      },
+      {
+        id: 5,
+        title: "🏰 Level 5 – CONVERSION CASTLE",
+        biome: "Mixed Challenges & Word Problems",
+        pts: 40,
+        badge: "Word Problems",
+        questions: [
+          {
+            q: "Convert 2½ km into meters (m).",
+            opts: ["2,200 m", "2,400 m", "2,500 m", "2,800 m"],
+            ans: 2,
+            hint: "2 km = 2,000 m and ½ km = 500 m. Total = 2,000 + 500 = 2,500 m!"
+          },
+          {
+            q: "🍹 Siti poured 1⅗ L of fresh orange juice into a party bowl. How many mL is that?",
+            opts: ["1,350 mL", "1,500 mL", "1,600 mL", "1,650 mL"],
+            ans: 2,
+            hint: "1 L = 1,000 mL and ⅗ L = 600 mL. 1,000 + 600 = 1,600 mL!"
+          },
+          {
+            q: "🌾 A chef used 2½ kg of fragrant rice for a big feast. How many grams of rice were used?",
+            opts: ["2,000 g", "2,250 g", "2,500 g", "2,750 g"],
+            ans: 2,
+            hint: "2 kg = 2,000 g and ½ kg = 500 g. 2,000 + 500 = 2,500 g!"
+          },
+          {
+            q: "🚰 A water jug contains ¾ L of pure mineral water. How many mL is inside?",
+            opts: ["500 mL", "600 mL", "750 mL", "850 mL"],
+            ans: 2,
+            hint: "1 L = 1,000 mL. ¾ L = (1,000 ÷ 4) × 3 = 750 mL!"
+          },
+          {
+            q: "🏃‍♂️ An athlete ran 2½ km during morning practice. How many meters did they cover?",
+            opts: ["2,000 m", "2,250 m", "2,500 m", "2,750 m"],
+            ans: 2,
+            hint: "2 km = 2,000 m + ½ km (500 m) = 2,500 m!"
+          }
+        ]
+      },
+      {
+        id: 6,
+        title: "👑 Level 6 – UNIT HERO FINAL",
+        biome: "Ultimate Master Quest",
+        pts: 50,
+        badge: "Ultimate",
+        questions: [
+          {
+            q: "Convert ⅖ km into meters (m).",
+            opts: ["200 m", "300 m", "400 m", "500 m"],
+            ans: 2,
+            hint: "(1,000 ÷ 5) × 2 = 200 × 2 = 400 m!"
+          },
+          {
+            q: "Convert 1⅛ L into milliliters (mL).",
+            opts: ["1,125 mL", "1,250 mL", "1,375 mL", "1,500 mL"],
+            ans: 0,
+            hint: "1 L = 1,000 mL + ⅛ L (125 mL) = 1,125 mL!"
+          },
+          {
+            q: "Convert 2¼ m into centimeters (cm).",
+            opts: ["210 cm", "225 cm", "240 cm", "250 cm"],
+            ans: 1,
+            hint: "2 m = 200 cm + ¼ m (25 cm) = 225 cm!"
+          },
+          {
+            q: "🧁 Chef Alex bought 1½ kg of baking flour for cookies. How many grams of flour is that?",
+            opts: ["1,200 g", "1,400 g", "1,500 g", "1,600 g"],
+            ans: 2,
+            hint: "1 kg = 1,000 g + ½ kg (500 g) = 1,500 g!"
+          },
+          {
+            q: "🌉 A footbridge across the river is 2¼ m wide. How many cm wide is the bridge?",
+            opts: ["200 cm", "215 cm", "225 cm", "250 cm"],
+            ans: 2,
+            hint: "2 m = 200 cm + ¼ m (25 cm) = 225 cm!"
+          },
+          {
+            q: " Convert 2½ km into meters (m).",
+            opts: ["2,250 m", "2,500 m", "2,750 m", "3,000 m"],
+            ans: 1,
+            hint: "2 km = 2,000 m + ½ km (500 m) = 2,500 m!"
+          }
+        ]
+      }
+    ];
+
+    class UnitHeroApp {
+      constructor() {
+        this.synth = new WebAudioSynth();
+        this.confetti = new ConfettiEngine();
+
+        // Default Student Profile State
+        this.state = {
+          playerName: "Explorer",
+          avatar: "🦸‍♀️",
+          soundOn: true,
+          unlockedLevel: 1,
+          levelStars: [0, 0, 0, 0, 0, 0],
+          levelScores: [0, 0, 0, 0, 0, 0],
+          totalScore: 0,
+          totalStars: 0,
+          currentLevelIdx: 0,
+          currentQIdx: 0,
+          levelCorrectAns: 0,
+          levelTotalQ: 0,
+          levelScoreEarned: 0,
+          hasAttemptedWrong: false,
+          totalCorrectAll: 0,
+          totalQuestionsAll: 0,
+          leaderboard: [
+            { name: "Maya Math Wiz", avatar: "🦸‍♀️", stars: 18, score: 780, title: "👑 SUPREME UNIT HERO" },
+            { name: "Leo Master", avatar: "🧙", stars: 15, score: 620, title: "🏰 CASTLE CHAMPION" },
+            { name: "Aria Hero", avatar: "🤖", stars: 12, score: 480, title: "🌊 RIVER EXPLORER" }
+          ]
+        };
+
+        this.loadLocalStorage();
+      }
+
+      init() {
+        this.updateHeaderUI();
+        this.renderMapNodes();
+        this.renderLeaderboardRows();
+
+        // Pre-fill input if saved
+        const nameInput = document.getElementById('player-name-input');
+        if (nameInput && this.state.playerName !== "Explorer") {
+          nameInput.value = this.state.playerName;
+        }
+      }
+
+      loadLocalStorage() {
+        try {
+          const saved = localStorage.getItem('unit_hero_sav_v1');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            this.state = { ...this.state, ...parsed };
+          }
+        } catch (e) { console.error("Error loading saved data", e); }
+      }
+
+      saveLocalStorage() {
+        try {
+          localStorage.setItem('unit_hero_sav_v1', JSON.stringify(this.state));
+        } catch (e) { console.error("Error saving data", e); }
+      }
+
+      selectAvatar(emoji) {
+        this.synth.playClick();
+        this.state.avatar = emoji;
+        document.querySelectorAll('.avatar-opt').forEach(btn => {
+          if (btn.innerText.includes(emoji)) {
+            btn.classList.add('bg-indigo-700', 'border-amber-400');
+            btn.classList.remove('bg-indigo-900', 'border-indigo-700');
+          } else {
+            btn.classList.remove('bg-indigo-700', 'border-amber-400');
+            btn.classList.add('bg-indigo-900', 'border-indigo-700');
+          }
+        });
+      }
+
+      toggleSound() {
+        const on = this.synth.toggleBGM();
+        this.state.soundOn = on;
+        document.getElementById('sound-text').innerText = on ? 'ON' : 'OFF';
+        document.getElementById('sound-icon').className = on ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+      }
+
+      startAdventure() {
+        this.synth.playClick();
+        const inputVal = document.getElementById('player-name-input').value.trim();
+        if (inputVal.length > 0) {
+          this.state.playerName = inputVal;
+        }
+        this.saveLocalStorage();
+        this.updateHeaderUI();
+        this.showScreen('map');
+      }
+
+      updateHeaderUI() {
+        document.getElementById('hdr-name').innerText = this.state.playerName;
+        document.getElementById('hdr-avatar').innerText = this.state.avatar;
+        
+        const stars = this.state.levelStars.reduce((a, b) => a + b, 0);
+        const score = this.state.levelScores.reduce((a, b) => a + b, 0);
+        this.state.totalStars = stars;
+        this.state.totalScore = score;
+
+        document.getElementById('hdr-stars').innerText = stars;
+        document.getElementById('hdr-score').innerText = score;
+        document.getElementById('map-total-stars').innerText = stars;
+        document.getElementById('map-total-score').innerText = score;
+
+        // Show header stats badge
+        document.getElementById('header-user-badge').classList.remove('hidden');
+        document.getElementById('map-nav-btn').classList.remove('hidden');
+      }
+
+      showScreen(screenId) {
+        this.synth.playClick();
+        ['home', 'map', 'quiz', 'notes', 'leaderboard', 'results'].forEach(id => {
+          const el = document.getElementById(`screen-${id}`);
+          if (el) el.classList.add('hidden');
+        });
+
+        const target = document.getElementById(`screen-${screenId}`);
+        if (target) target.classList.remove('hidden');
+
+        if (screenId === 'map') {
+          this.renderMapNodes();
+        } else if (screenId === 'leaderboard') {
+          this.renderLeaderboardRows();
+        }
+      }
+
+      closeNotes() {
+        this.showScreen(this.state.currentLevelIdx >= 0 ? 'map' : 'home');
+      }
+
+      closeLeaderboard() {
+        this.showScreen('map');
+      }
+
+      renderMapNodes() {
+        const grid = document.getElementById('map-nodes-grid');
+        grid.innerHTML = '';
+
+        // Node positions layout along path
+        const coords = [
+          { top: '80%', left: '10%' },
+          { top: '65%', left: '42%' },
+          { top: '50%', left: '75%' },
+          { top: '35%', left: '45%' },
+          { top: '20%', left: '15%' },
+          { top: '5%',  left: '60%' }
+        ];
+
+        GAME_LEVELS.forEach((lvl, idx) => {
+          const isUnlocked = lvl.id <= this.state.unlockedLevel;
+          const starsEarned = this.state.levelStars[idx] || 0;
+          const levelScore = this.state.levelScores[idx] || 0;
+          const pos = coords[idx];
+
+          const node = document.createElement('div');
+          node.className = `absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center transition duration-300 ${isUnlocked ? 'cursor-pointer hover:scale-110' : 'opacity-70 cursor-not-allowed'}`;
+          node.style.top = pos.top;
+          node.style.left = pos.left;
+
+          let starHTML = '';
+          for (let s = 1; s <= 3; s++) {
+            starHTML += `<i class="fa-solid fa-star text-xs ${s <= starsEarned ? 'text-amber-400' : 'text-slate-600'}"></i>`;
+          }
+
+          node.innerHTML = `
+            <div class="relative">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl btn-candy flex items-center justify-center text-2xl sm:text-3xl border-4 ${isUnlocked ? 'bg-gradient-to-br from-amber-400 to-orange-500 border-amber-200 glow-yellow' : 'bg-slate-800 border-slate-600'}">
+                ${isUnlocked ? lvl.title.split(' ')[0] : '🔒'}
+              </div>
+              <div class="absolute -bottom-2 inset-x-0 flex justify-center space-x-0.5 bg-indigo-950/90 border border-amber-400/60 rounded-full px-1.5 py-0.5">
+                ${starHTML}
+              </div>
+            </div>
+            <div class="mt-2 text-center bg-indigo-950/90 border border-indigo-600 rounded-xl px-2 py-1 max-w-[120px] shadow">
+              <div class="text-[10px] sm:text-xs font-black text-amber-300 truncate">${lvl.title.split('–')[1] || lvl.title}</div>
+              <div class="text-[9px] text-cyan-300 font-bold">${isUnlocked ? `${levelScore} pts` : 'Locked'}</div>
+            </div>
+          `;
+
+          if (isUnlocked) {
+            node.onclick = () => this.startLevel(idx);
+          }
+
+          grid.appendChild(node);
+        });
+      }
+
+      startLevel(levelIdx) {
+        this.synth.playClick();
+        this.state.currentLevelIdx = levelIdx;
+        this.state.currentQIdx = 0;
+        this.state.levelCorrectAns = 0;
+        this.state.levelScoreEarned = 0;
+        this.state.hasAttemptedWrong = false;
+
+        const lvl = GAME_LEVELS[levelIdx];
+        this.state.levelTotalQ = lvl.questions.length;
+
+        document.getElementById('quiz-level-icon').innerText = lvl.title.split(' ')[0];
+        document.getElementById('quiz-level-title').innerText = lvl.title;
+        document.getElementById('quiz-difficulty-tag').innerText = lvl.badge;
+        document.getElementById('quiz-pts-value').innerText = lvl.pts;
+
+        this.showScreen('quiz');
+        this.renderQuestion();
+      }
+
+      renderQuestion() {
+        const lvl = GAME_LEVELS[this.state.currentLevelIdx];
+        const qData = lvl.questions[this.state.currentQIdx];
+        this.state.hasAttemptedWrong = false;
+
+        document.getElementById('quiz-q-num').innerText = this.state.currentQIdx + 1;
+        document.getElementById('quiz-q-total').innerText = lvl.questions.length;
+        document.getElementById('quiz-question-text').innerText = qData.q;
+
+        const optionsContainer = document.getElementById('quiz-options-container');
+        optionsContainer.innerHTML = '';
+
+        const optionLabels = ['A', 'B', 'C', 'D'];
+        qData.opts.forEach((optText, idx) => {
+          const btn = document.createElement('button');
+          btn.className = `btn-candy bg-indigo-950 hover:bg-indigo-800 text-white font-bold py-3.5 px-4 rounded-2xl border-2 border-indigo-600 flex items-center text-left text-sm sm:text-base transition space-x-3`;
+          btn.innerHTML = `
+            <span class="w-8 h-8 rounded-xl bg-indigo-800 text-amber-300 font-black flex items-center justify-center border border-indigo-500 flex-shrink-0">${optionLabels[idx]}</span>
+            <span class="flex-grow">${optText}</span>
+          `;
+          btn.onclick = () => this.handleOptionSelect(idx, btn);
+          optionsContainer.appendChild(btn);
+        });
+      }
+
+      handleOptionSelect(selectedIdx, btnEl) {
+        const lvl = GAME_LEVELS[this.state.currentLevelIdx];
+        const qData = lvl.questions[this.state.currentQIdx];
+
+        if (selectedIdx === qData.ans) {
+          // Correct Answer
+          this.synth.playCorrect();
+          btnEl.className = btnEl.className.replace('bg-indigo-950', 'bg-emerald-600').replace('border-indigo-600', 'border-emerald-300');
+          btnEl.innerHTML += `<i class="fa-solid fa-circle-check text-white text-xl ml-2"></i>`;
+
+          if (!this.state.hasAttemptedWrong) {
+            this.state.levelCorrectAns++;
+            this.state.levelScoreEarned += lvl.pts;
+          } else {
+            // Half score for 2nd attempt
+            this.state.levelScoreEarned += Math.round(lvl.pts / 2);
+          }
+
+          // Disable options
+          const container = document.getElementById('quiz-options-container');
+          Array.from(container.children).forEach(child => child.style.pointerEvents = 'none');
+
+          setTimeout(() => {
+            this.state.currentQIdx++;
+            if (this.state.currentQIdx < lvl.questions.length) {
+              this.renderQuestion();
+            } else {
+              this.finishLevel();
+            }
+          }, 1100);
+
+        } else {
+          // Wrong Answer - Show Gentle Hint instead of immediate failure
+          this.synth.playWrong();
+          this.state.hasAttemptedWrong = true;
+          btnEl.classList.add('bg-rose-900/80', 'border-rose-500');
+
+          document.getElementById('modal-hint-text').innerText = qData.hint;
+          document.getElementById('modal-hint').classList.remove('hidden');
+        }
+      }
+
+      closeHintModal() {
+        this.synth.playClick();
+        document.getElementById('modal-hint').classList.add('hidden');
+      }
+
+      finishLevel() {
+        const lvlIdx = this.state.currentLevelIdx;
+        const totalQ = this.state.levelTotalQ;
+        const correct = this.state.levelCorrectAns;
+        const accuracy = Math.round((correct / totalQ) * 100);
+
+        // Award Stars
+        let stars = 1;
+        if (accuracy >= 100) stars = 3;
+        else if (accuracy >= 60) stars = 2;
+
+        // Save progress if higher score/stars
+        if (stars > (this.state.levelStars[lvlIdx] || 0)) {
+          this.state.levelStars[lvlIdx] = stars;
+        }
+        if (this.state.levelScoreEarned > (this.state.levelScores[lvlIdx] || 0)) {
+          this.state.levelScores[lvlIdx] = this.state.levelScoreEarned;
+        }
+
+        // Unlock Next Level
+        if (lvlIdx + 1 < GAME_LEVELS.length && (lvlIdx + 1) >= this.state.unlockedLevel) {
+          this.state.unlockedLevel = lvlIdx + 2;
+          this.synth.playLevelUnlock();
+        }
+
+        this.updateHeaderUI();
+        this.saveLocalStorage();
+
+        // Check if all 6 levels completed
+        if (lvlIdx === GAME_LEVELS.length - 1) {
+          this.showFinalResults();
+          return;
+        }
+
+        // Trigger celebratory confetti and modal
+        this.confetti.explode();
+        this.synth.playLevelComplete();
+
+        document.getElementById('lvl-score-val').innerText = `${this.state.levelScoreEarned} pts`;
+        document.getElementById('lvl-accuracy-val').innerText = `${accuracy}%`;
+
+        // Render Stars Display in Modal
+        const starBox = document.getElementById('lvl-stars-display');
+        starBox.innerHTML = '';
+        for (let i = 0; i < 3; i++) {
+          const starIcon = document.createElement('i');
+          starIcon.className = `fa-solid fa-star ${i < stars ? 'text-amber-400 animate-bounce' : 'text-slate-700'}`;
+          starBox.appendChild(starIcon);
+        }
+
+        document.getElementById('modal-level-complete').classList.remove('hidden');
+      }
+
+      proceedNextLevel() {
+        document.getElementById('modal-level-complete').classList.add('hidden');
+        if (this.state.currentLevelIdx + 1 < GAME_LEVELS.length) {
+          this.startLevel(this.state.currentLevelIdx + 1);
+        } else {
+          this.showScreen('map');
+        }
+      }
+
+      showFinalResults() {
+        this.synth.playVictory();
+        this.confetti.explode();
+
+        const totalStars = this.state.levelStars.reduce((a, b) => a + b, 0);
+        const totalScore = this.state.levelScores.reduce((a, b) => a + b, 0);
+
+        document.getElementById('res-student-name').innerText = this.state.playerName;
+        document.getElementById('res-score').innerText = totalScore;
+        document.getElementById('res-stars').innerText = `${totalStars} / 18`;
+
+        let title = "🌟 SUPREME UNIT HERO 👑";
+        if (totalStars < 12) title = "🏰 CASTLE CHAMPION ⚔️";
+        if (totalStars < 6) title = "🌱 VILLAGE EXPLORER 🎒";
+
+        document.getElementById('res-achievement-title').innerText = title;
+
+        // Push entry to local Leaderboard
+        const existingIdx = this.state.leaderboard.findIndex(item => item.name === this.state.playerName);
+        const newEntry = {
+          name: this.state.playerName,
+          avatar: this.state.avatar,
+          stars: totalStars,
+          score: totalScore,
+          title: title
+        };
+
+        if (existingIdx >= 0) {
+          if (totalScore > this.state.leaderboard[existingIdx].score) {
+            this.state.leaderboard[existingIdx] = newEntry;
+          }
+        } else {
+          this.state.leaderboard.push(newEntry);
+        }
+
+        // Sort Leaderboard
+        this.state.leaderboard.sort((a, b) => b.score - a.score);
+        this.saveLocalStorage();
+
+        this.showScreen('results');
+      }
+
+      renderLeaderboardRows() {
+        const rowsContainer = document.getElementById('leaderboard-rows');
+        rowsContainer.innerHTML = '';
+
+        const sorted = [...this.state.leaderboard].sort((a, b) => b.score - a.score);
+
+        sorted.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = `grid grid-cols-12 p-3 text-xs sm:text-sm font-bold items-center text-center ${idx === 0 ? 'bg-amber-500/20 text-amber-300' : 'text-indigo-100'}`;
+
+          let rankBadge = `${idx + 1}`;
+          if (idx === 0) rankBadge = '🥇';
+          else if (idx === 1) rankBadge = '🥈';
+          else if (idx === 2) rankBadge = '🥉';
+
+          row.innerHTML = `
+            <div class="col-span-2 text-base font-black">${rankBadge}</div>
+            <div class="col-span-5 text-left flex items-center space-x-2 truncate">
+              <span class="text-xl">${item.avatar || '🦸‍♀️'}</span>
+              <span class="truncate">${item.name}</span>
+            </div>
+            <div class="col-span-2 text-amber-400 font-bold"><i class="fa-solid fa-star mr-1"></i>${item.stars}</div>
+            <div class="col-span-3 text-cyan-300 font-bold">${item.score} pts</div>
+          `;
+          rowsContainer.appendChild(row);
+        });
+      }
+
+      runLiveConverter() {
+        this.synth.playClick();
+        const fractionVal = parseFloat(document.getElementById('calc-fraction').value);
+        const convType = document.getElementById('calc-type').value;
+
+        let factor = 1000;
+        let fromUnit = "km";
+        let toUnit = "m";
+
+        if (convType === "m_cm") {
+          factor = 100;
+          fromUnit = "m";
+          toUnit = "cm";
+        } else if (convType === "kg_g") {
+          factor = 1000;
+          fromUnit = "kg";
+          toUnit = "g";
+        } else if (convType === "l_ml") {
+          factor = 1000;
+          fromUnit = "L";
+          toUnit = "mL";
+        }
+
+        const resultVal = fractionVal * factor;
+        const resultBox = document.getElementById('calc-result-box');
+        resultBox.classList.remove('hidden');
+
+        resultBox.innerHTML = `
+          <div class="text-amber-300 font-bold border-b border-indigo-700 pb-1 mb-1">Calculation Step-By-Step:</div>
+          <div>• Base Formula: 1 ${fromUnit} = ${factor.toLocaleString()} ${toUnit}</div>
+          <div>• Step 1: Multiply fraction amount (${fractionVal}) × ${factor.toLocaleString()}</div>
+          <div class="text-emerald-400 font-bold text-sm mt-1">✔ Final Answer: ${resultVal.toLocaleString()} ${toUnit}</div>
+        `;
+      }
+    }
+
+    // Initialize Application Instance on Load
+    let app;
+    window.onload = function() {
+      app = new UnitHeroApp();
+      app.init();
+    };
+  </script>
+</body>
+</html>
